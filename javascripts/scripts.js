@@ -85,6 +85,7 @@ function mousedown(e){
   inputMan.cRow = row;
   inputMan.cCol = col;
   inputMan.down = true;
+  inputMan.piece = findPiece(inputMan.dRow, inputMan.dCol);
 }
 
 function mousemove(e) {
@@ -99,6 +100,13 @@ function mousemove(e) {
   }
 }
 
+function validMove(destinationPiece){
+  if (destinationPiece && destinationPiece.player == inputMan.piece.player){
+    return false;
+  }
+  return true;
+}
+
 function mouseup(e){
   var y = e.offsetY;
   var x = e.offsetX;
@@ -107,11 +115,32 @@ function mouseup(e){
   inputMan.uRow = row;
   inputMan.uCol = col;
   inputMan.down = false;
+
+  var destinationPiece = findPiece(inputMan.uRow, inputMan.uCol);
+  if (validMove(destinationPiece)){
+    if (destinationPiece){
+      destinationPiece.row = -1;
+      destinationPiece.col = -1;
+    }
+    inputMan.piece.row = inputMan.uRow;
+    inputMan.piece.col = inputMan.uCol;
+  }
+
   console.log('Move');
   console.log('----');
   console.log('Down: ', inputMan.dRow, inputMan.dCol);
   console.log('Up: ', inputMan.uRow, inputMan.uCol);
   draw();
+}
+
+
+function findPiece(row, col){
+  for(var i=0; i<pieces.length; i++){
+    if(pieces[i].row == row && pieces[i].col == col){
+      console.log(pieces[i])
+      return pieces[i]
+    }
+  }
 }
 
 function drawBoard() {
