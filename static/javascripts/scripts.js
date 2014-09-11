@@ -3,6 +3,7 @@ console.log('Your Turn');
 var socket;
 var canvas;
 var context;
+var pieces;
 var gameStates=[];
 var size = 80;
 var fontSize = Math.floor(size/2);
@@ -31,48 +32,59 @@ var inputMan = {
   cCol: -1
 }
 
-var pieces = [
-  {row: 0, col: 0, player: 1, type: 'R'},
-  {row: 0, col: 1, player: 1, type: 'N'},
-  {row: 0, col: 2, player: 1, type: 'B'},
-  {row: 0, col: 3, player: 1, type: 'Q'},
-  {row: 0, col: 4, player: 1, type: 'K'},
-  {row: 0, col: 5, player: 1, type: 'B'},
-  {row: 0, col: 6, player: 1, type: 'N'},
-  {row: 0, col: 7, player: 1, type: 'R'},
-  {row: 1, col: 0, player: 1, type: 'P'},
-  {row: 1, col: 1, player: 1, type: 'P'},
-  {row: 1, col: 2, player: 1, type: 'P'},
-  {row: 1, col: 3, player: 1, type: 'P'},
-  {row: 1, col: 4, player: 1, type: 'P'},
-  {row: 1, col: 5, player: 1, type: 'P'},
-  {row: 1, col: 6, player: 1, type: 'P'},
-  {row: 1, col: 7, player: 1, type: 'P'},
-  {row: 7, col: 0, player: 0, type: 'R'},
-  {row: 7, col: 1, player: 0, type: 'N'},
-  {row: 7, col: 2, player: 0, type: 'B'},
-  {row: 7, col: 3, player: 0, type: 'Q'},
-  {row: 7, col: 4, player: 0, type: 'K'},
-  {row: 7, col: 5, player: 0, type: 'B'},
-  {row: 7, col: 6, player: 0, type: 'N'},
-  {row: 7, col: 7, player: 0, type: 'R'},
-  {row: 6, col: 0, player: 0, type: 'P'},
-  {row: 6, col: 1, player: 0, type: 'P'},
-  {row: 6, col: 2, player: 0, type: 'P'},
-  {row: 6, col: 3, player: 0, type: 'P'},
-  {row: 6, col: 4, player: 0, type: 'P'},
-  {row: 6, col: 5, player: 0, type: 'P'},
-  {row: 6, col: 6, player: 0, type: 'P'},
-  {row: 6, col: 7, player: 0, type: 'P'},
-]
+function defaultBoard(){
+  return [
+    {row: 0, col: 0, player: 1, type: 'R'},
+    {row: 0, col: 1, player: 1, type: 'N'},
+    {row: 0, col: 2, player: 1, type: 'B'},
+    {row: 0, col: 3, player: 1, type: 'Q'},
+    {row: 0, col: 4, player: 1, type: 'K'},
+    {row: 0, col: 5, player: 1, type: 'B'},
+    {row: 0, col: 6, player: 1, type: 'N'},
+    {row: 0, col: 7, player: 1, type: 'R'},
+    {row: 1, col: 0, player: 1, type: 'P'},
+    {row: 1, col: 1, player: 1, type: 'P'},
+    {row: 1, col: 2, player: 1, type: 'P'},
+    {row: 1, col: 3, player: 1, type: 'P'},
+    {row: 1, col: 4, player: 1, type: 'P'},
+    {row: 1, col: 5, player: 1, type: 'P'},
+    {row: 1, col: 6, player: 1, type: 'P'},
+    {row: 1, col: 7, player: 1, type: 'P'},
+    {row: 7, col: 0, player: 0, type: 'R'},
+    {row: 7, col: 1, player: 0, type: 'N'},
+    {row: 7, col: 2, player: 0, type: 'B'},
+    {row: 7, col: 3, player: 0, type: 'Q'},
+    {row: 7, col: 4, player: 0, type: 'K'},
+    {row: 7, col: 5, player: 0, type: 'B'},
+    {row: 7, col: 6, player: 0, type: 'N'},
+    {row: 7, col: 7, player: 0, type: 'R'},
+    {row: 6, col: 0, player: 0, type: 'P'},
+    {row: 6, col: 1, player: 0, type: 'P'},
+    {row: 6, col: 2, player: 0, type: 'P'},
+    {row: 6, col: 3, player: 0, type: 'P'},
+    {row: 6, col: 4, player: 0, type: 'P'},
+    {row: 6, col: 5, player: 0, type: 'P'},
+    {row: 6, col: 6, player: 0, type: 'P'},
+    {row: 6, col: 7, player: 0, type: 'P'},
+  ]
+}
+
+
 
 window.onload = init;
 
 function init() {
   document.getElementById('undo-button').addEventListener('click', undo);
+  document.getElementById('reset-button').addEventListener('click', function(){
+    pieces = defaultBoard();
+    sendData()
+    draw()
+  });
+
   canvas = document.getElementById('board');
   context = canvas.getContext('2d');
   console.log(context);
+  pieces = defaultBoard();
   draw();
 
   socket = io.connect('/');
@@ -134,11 +146,15 @@ function mouseup(e){
 
     currentPlayer = 1 - currentPlayer;
 
-    socket.emit('makeMove', {pieces: pieces, currentPlayer: currentPlayer});
+    sendData();
   }
 
   draw();
 
+}
+
+function sendData(){
+  socket.emit('makeMove', {pieces: pieces, currentPlayer: currentPlayer});
 }
 
 function validMove(destinationPiece){
@@ -161,6 +177,7 @@ function undo(){
   if (gameStates.length>0){
     pieces = gameStates.pop();
     currentPlayer = 1 - currentPlayer;
+    sendData();
   }
   draw();
 }
