@@ -18,6 +18,8 @@ var players = [
   }
 ]
 
+var currentPlayer = 0;
+
 var inputMan = {
   down: false,
   dRow: -1,
@@ -102,13 +104,6 @@ function mousemove(e) {
   }
 }
 
-function validMove(destinationPiece){
-  if (destinationPiece && destinationPiece.player == inputMan.piece.player){
-    return false;
-  }
-  return true;
-}
-
 function mouseup(e){
   var y = e.offsetY;
   var x = e.offsetX;
@@ -129,15 +124,18 @@ function mouseup(e){
     inputMan.piece.row = inputMan.uRow;
     inputMan.piece.col = inputMan.uCol;
 
+    currentPlayer = 1 - currentPlayer;
   }
 
-  console.log('Move');
-  console.log('----');
-  console.log('Down: ', inputMan.dRow, inputMan.dCol);
-  console.log('Up: ', inputMan.uRow, inputMan.uCol);
   draw();
+}
 
-
+function validMove(destinationPiece){
+  if (destinationPiece && destinationPiece.player === inputMan.piece.player){
+    return false;
+  }
+  if (inputMan.piece.player !== currentPlayer)
+  return true;
 }
 
 function saveGame(){
@@ -167,7 +165,7 @@ function cloneGame(){
 
 function findPiece(row, col){
   for(var i=0; i<pieces.length; i++){
-    if(pieces[i].row == row && pieces[i].col == col){
+    if(pieces[i].row === row && pieces[i].col === col){
       console.log(pieces[i])
       return pieces[i]
     }
@@ -177,7 +175,7 @@ function findPiece(row, col){
 function drawBoard() {
   for (var row = 0; row < 8; row++) {
     for (var col = 0; col < 8; col++) {
-      context.fillStyle = (row + col) % 2 == 0 ? '#ffedc7' : '#333';
+      context.fillStyle = (row + col) % 2 === 0 ? '#ffedc7' : '#333';
       context.fillRect(col * size, row * size, size, size);
     }
   }
@@ -226,9 +224,16 @@ function drawHighlight() {
   }
 }
 
+function drawHud() {
+  var turn = document.getElementById('turn')
+  turn.innerHTML = currentPlayer === 0 ? 'White' : 'Black';
+  turn.style.color = currentPlayer === 0 ? 'white' : 'black';
+}
+
 function draw() {
   context.clearRect(0, 0, 8 * size, 8 * size);
   drawBoard();
   drawPieces();
   drawHighlight();
+  drawHud();
 }
