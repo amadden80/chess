@@ -17,6 +17,16 @@ var players = [
   }
 ]
 
+var inputMan = {
+  down: false,
+  dRow: -1,
+  dCol: -1,
+  uRow: -1,
+  uRow: -1,
+  cRow: -1,
+  cCol: -1
+}
+
 var pieces = [
   {row: 0, col: 0, player: 0, type: 'R'},
   {row: 0, col: 1, player: 0, type: 'N'},
@@ -60,12 +70,9 @@ function init() {
   console.log(context);
   draw();
 
-  canvas.addEventListener('mousedown', mousedown)
-
-  pieces.forEach(function(piece){
-    drawPiece(piece);
-  });
-
+  canvas.addEventListener('mousedown', mousedown);
+  canvas.addEventListener('mousemove', mousemove);
+  canvas.addEventListener('mouseup', mouseup);
 }
 
 function mousedown(e){
@@ -73,9 +80,39 @@ function mousedown(e){
   var x = e.offsetX;
   var col = Math.floor(x/size);
   var row = Math.floor(y/size);
-  console.log(row, col)
+  inputMan.dRow = row;
+  inputMan.dCol = col;
+  inputMan.cRow = row;
+  inputMan.cCol = col;
+  inputMan.down = true;
 }
 
+function mousemove(e) {
+  if (inputMan.down) {
+    var y = e.offsetY;
+    var x = e.offsetX;
+    var col = Math.floor(x/size);
+    var row = Math.floor(y/size);
+    inputMan.cRow = row;
+    inputMan.cCol = col;
+    draw();
+  }
+}
+
+function mouseup(e){
+  var y = e.offsetY;
+  var x = e.offsetX;
+  var col = Math.floor(x/size);
+  var row = Math.floor(y/size);
+  inputMan.uRow = row;
+  inputMan.uCol = col;
+  inputMan.down = false;
+  console.log('Move');
+  console.log('----');
+  console.log('Down: ', inputMan.dRow, inputMan.dCol);
+  console.log('Up: ', inputMan.uRow, inputMan.uCol);
+  draw();
+}
 
 function drawBoard() {
   for (var row = 0; row < 8; row++) {
@@ -89,22 +126,49 @@ function drawBoard() {
 function drawPiece(piece){
   var x = piece.col*size+size/2;
   var y = piece.row*size+size/2;
+
   context.save();
 
   context.fillStyle = players[piece.player].color;
   context.strokeStyle = players[1 - piece.player].color;
+
   context.beginPath();
   context.arc(x, y, size/2.5, 0, 2*Math.PI);
   context.fill();
   context.stroke();
+
   context.fillStyle = players[piece.player].textColor;
   context.font = fontSize + 'pt Georgia';
   var offset = context.measureText(piece.type).width;
   context.fillText(piece.type, x - offset/2, y + fontSize/2);
+
   context.restore();
+}
+
+function drawPieces() {
+  pieces.forEach(function(piece){
+    drawPiece(piece);
+  });
+}
+
+function drawHighlight() {
+  if (inputMan.down) {
+    var x = inputMan.cCol*size+size/2;
+    var y = inputMan.cRow*size+size/2;
+
+    context.save();
+    context.strokeStyle = "#ff0";
+    context.lineWidth = 5;
+    context.beginPath();
+    context.arc(x, y, size/2.5, 0, 2*Math.PI);
+    context.stroke();
+    context.restore();
+  }
 }
 
 function draw() {
   context.clearRect(0, 0, 8 * size, 8 * size);
   drawBoard();
+  drawPieces();
+  drawHighlight();
 }
