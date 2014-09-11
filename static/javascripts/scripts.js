@@ -75,11 +75,7 @@ window.onload = init;
 
 function init() {
   document.getElementById('undo-button').addEventListener('click', undo);
-  document.getElementById('reset-button').addEventListener('click', function(){
-    pieces = defaultBoard();
-    sendData()
-    draw()
-  });
+  document.getElementById('reset-button').addEventListener('click', resetGame)
 
   canvas = document.getElementById('board');
   context = canvas.getContext('2d');
@@ -97,6 +93,14 @@ function init() {
   canvas.addEventListener('mousedown', mousedown);
   canvas.addEventListener('mousemove', mousemove);
   canvas.addEventListener('mouseup', mouseup);
+}
+
+
+function resetGame(){
+  pieces = defaultBoard();
+  currentPlayer = 0;
+  sendData()
+  draw()
 }
 
 function mousedown(e){
