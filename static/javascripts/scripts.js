@@ -19,6 +19,8 @@ var players = [
   }
 ]
 
+var currentPlayer = 0;
+
 var inputMan = {
   down: false,
   dRow: -1,
@@ -75,7 +77,6 @@ function init() {
 
   socket = io.connect('/');
   socket.on('moveMade', function(data){
-    console.log('moveMade', data)
     pieces = data;
     draw();
   })
@@ -140,12 +141,7 @@ function mouseup(e){
 
   }
 
-  console.log('Move');
-  console.log('----');
-  console.log('Down: ', inputMan.dRow, inputMan.dCol);
-  console.log('Up: ', inputMan.uRow, inputMan.uCol);
   draw();
-
 
 }
 
@@ -176,7 +172,7 @@ function cloneGame(){
 
 function findPiece(row, col){
   for(var i=0; i<pieces.length; i++){
-    if(pieces[i].row == row && pieces[i].col == col){
+    if(pieces[i].row === row && pieces[i].col === col){
       console.log(pieces[i])
       return pieces[i]
     }
@@ -186,7 +182,7 @@ function findPiece(row, col){
 function drawBoard() {
   for (var row = 0; row < 8; row++) {
     for (var col = 0; col < 8; col++) {
-      context.fillStyle = (row + col) % 2 == 0 ? '#ffedc7' : '#333';
+      context.fillStyle = (row + col) % 2 === 0 ? '#ffedc7' : '#333';
       context.fillRect(col * size, row * size, size, size);
     }
   }
@@ -195,21 +191,30 @@ function drawBoard() {
 function drawPiece(piece){
   var x = piece.col*size+size/2;
   var y = piece.row*size+size/2;
-
+  var radius;
+  var pieceFontSize;
+  if (piece.type === 'P') {
+    radius = size/3;
+    pieceFontSize = Math.floor(fontSize/1.5);
+  } else {
+    radius = size/2.5;
+    pieceFontSize = fontSize;
+  }
   context.save();
 
   context.fillStyle = players[piece.player].color;
   context.strokeStyle = players[1 - piece.player].color;
 
   context.beginPath();
-  context.arc(x, y, size/2.5, 0, 2*Math.PI);
+
+  context.arc(x, y, radius, 0, 2*Math.PI);
   context.fill();
   context.stroke();
 
   context.fillStyle = players[piece.player].textColor;
-  context.font = fontSize + 'pt Georgia';
+  context.font = pieceFontSize + 'pt Georgia';
   var offset = context.measureText(piece.type).width;
-  context.fillText(piece.type, x - offset/2, y + fontSize/2);
+  context.fillText(piece.type, x - offset/2, y + pieceFontSize/2);
 
   context.restore();
 }
@@ -235,9 +240,23 @@ function drawHighlight() {
   }
 }
 
+function drawHud() {
+  var whiteTurn = document.getElementById('white-turn');
+  var blackTurn = document.getElementById('black-turn');
+
+  if (currentPlayer === 0) {
+    whiteTurn.innerHTML = 'White to play';
+    blackTurn.innerHTML = ' ';
+  } else {
+    whiteTurn.innerHTML = ' ';
+    blackTurn.innerHTML = 'Black to play';
+  }
+}
+
 function draw() {
   context.clearRect(0, 0, 8 * size, 8 * size);
   drawBoard();
   drawPieces();
   drawHighlight();
+  drawHud();
 }
