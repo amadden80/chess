@@ -74,9 +74,9 @@ function init() {
   draw();
 
   socket = io.connect('/');
-  socket.on('moveMade', function(pieces){
-    pieces = pieces;
-    console.log('pieces')
+  socket.on('moveMade', function(data){
+    console.log('moveMade', data)
+    pieces = data;
     draw();
   })
 
