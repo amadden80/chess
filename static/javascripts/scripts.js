@@ -77,7 +77,8 @@ function init() {
 
   socket = io.connect('/');
   socket.on('moveMade', function(data){
-    pieces = data;
+    pieces = data.pieces;
+    currentPlayer = data.currentPlayer;
     draw();
   })
 
@@ -130,9 +131,10 @@ function mouseup(e){
     }
     inputMan.piece.row = inputMan.uRow;
     inputMan.piece.col = inputMan.uCol;
-    socket.emit('makeMove', pieces);
 
     currentPlayer = 1 - currentPlayer;
+
+    socket.emit('makeMove', {pieces: pieces, currentPlayer: currentPlayer});
   }
 
   draw();
