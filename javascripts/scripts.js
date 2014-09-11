@@ -145,6 +145,7 @@ function saveGame(){
 function undo(){
   if (gameStates.length>0){
     pieces = gameStates.pop();
+    currentPlayer = 1 - currentPlayer;
   }
   draw();
 }
