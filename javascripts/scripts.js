@@ -60,11 +60,22 @@ function init() {
   console.log(context);
   draw();
 
+  canvas.addEventListener('mousedown', mousedown)
+
   pieces.forEach(function(piece){
     drawPiece(piece);
   });
 
 }
+
+function mousedown(e){
+  var y = e.offsetY;
+  var x = e.offsetX;
+  var col = Math.floor(x/size);
+  var row = Math.floor(y/size);
+  console.log(row, col)
+}
+
 
 function drawBoard() {
   for (var row = 0; row < 8; row++) {

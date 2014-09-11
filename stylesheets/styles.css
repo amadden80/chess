@@ -4,9 +4,3 @@ body{
   text-align: center;
   color: steelblue;
 }
-
-#board {
-  max-width: 640px;
-  width: 70%;
-  margin: 0 auto;
-}
