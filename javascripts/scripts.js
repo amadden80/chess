@@ -3,6 +3,51 @@ console.log('Your Turn');
 var canvas;
 var context;
 var size = 80;
+var players = [
+  {
+    color: '#f00',
+    name: 'Andy',
+  },
+  {
+    color: '#00f',
+    name: 'Hari',
+  }
+]
+
+var pieces = [
+  {row: 0, col: 0, player: 0, type: 'R'},
+  {row: 0, col: 1, player: 0, type: 'N'},
+  {row: 0, col: 2, player: 0, type: 'B'},
+  {row: 0, col: 3, player: 0, type: 'Q'},
+  {row: 0, col: 4, player: 0, type: 'K'},
+  {row: 0, col: 5, player: 0, type: 'B'},
+  {row: 0, col: 6, player: 0, type: 'N'},
+  {row: 0, col: 7, player: 0, type: 'R'},
+  {row: 1, col: 0, player: 0, type: 'P'},
+  {row: 1, col: 1, player: 0, type: 'P'},
+  {row: 1, col: 2, player: 0, type: 'P'},
+  {row: 1, col: 3, player: 0, type: 'P'},
+  {row: 1, col: 4, player: 0, type: 'P'},
+  {row: 1, col: 5, player: 0, type: 'P'},
+  {row: 1, col: 6, player: 0, type: 'P'},
+  {row: 1, col: 7, player: 0, type: 'P'},
+  {row: 6, col: 0, player: 1, type: 'R'},
+  {row: 6, col: 1, player: 1, type: 'N'},
+  {row: 6, col: 2, player: 1, type: 'B'},
+  {row: 6, col: 3, player: 1, type: 'Q'},
+  {row: 6, col: 4, player: 1, type: 'K'},
+  {row: 6, col: 5, player: 1, type: 'B'},
+  {row: 6, col: 6, player: 1, type: 'N'},
+  {row: 6, col: 7, player: 1, type: 'R'},
+  {row: 7, col: 0, player: 1, type: 'P'},
+  {row: 7, col: 1, player: 1, type: 'P'},
+  {row: 7, col: 2, player: 1, type: 'P'},
+  {row: 7, col: 3, player: 1, type: 'P'},
+  {row: 7, col: 4, player: 1, type: 'P'},
+  {row: 7, col: 5, player: 1, type: 'P'},
+  {row: 7, col: 6, player: 1, type: 'P'},
+  {row: 7, col: 7, player: 1, type: 'P'},
+]
 
 window.onload = init;
 
@@ -11,6 +56,11 @@ function init() {
   context = canvas.getContext('2d');
   console.log(context);
   draw();
+
+  pieces.forEach(function(piece){
+    drawPiece(piece);
+  });
+
 }
 
 function drawBoard() {
@@ -20,6 +70,19 @@ function drawBoard() {
       context.fillRect(col * size, row * size, size, size);
     }
   }
+}
+
+function drawPiece(piece){
+  var x = piece.col*size+size/2;
+  var y = piece.row*size+size/2;
+  context.save();
+  context.fillStyle = players[piece.player].color;
+  context.beginPath();
+  context.arc(x, y, size/2.5, 0, 2*Math.PI);
+  context.fill();
+  context.fillStyle = '#fff';
+  context.fillText(piece.type, x, y)
+  context.restore();
 }
 
 function draw() {
