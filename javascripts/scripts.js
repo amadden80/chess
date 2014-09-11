@@ -184,21 +184,30 @@ function drawBoard() {
 function drawPiece(piece){
   var x = piece.col*size+size/2;
   var y = piece.row*size+size/2;
-
+  var radius;
+  var pieceFontSize;
+  if (piece.type === 'P') {
+    radius = size/3;
+    pieceFontSize = Math.floor(fontSize/1.5);
+  } else {
+    radius = size/2.5;
+    pieceFontSize = fontSize;
+  }  
   context.save();
 
   context.fillStyle = players[piece.player].color;
   context.strokeStyle = players[1 - piece.player].color;
 
   context.beginPath();
-  context.arc(x, y, size/2.5, 0, 2*Math.PI);
+
+  context.arc(x, y, radius, 0, 2*Math.PI);
   context.fill();
   context.stroke();
 
   context.fillStyle = players[piece.player].textColor;
-  context.font = fontSize + 'pt Georgia';
+  context.font = pieceFontSize + 'pt Georgia';
   var offset = context.measureText(piece.type).width;
-  context.fillText(piece.type, x - offset/2, y + fontSize/2);
+  context.fillText(piece.type, x - offset/2, y + pieceFontSize/2);
 
   context.restore();
 }
