@@ -23,7 +23,14 @@ button {
   margin: 12px;
 }
 
-#turn {
+#white-turn {
   font-size: 24px;
   font-weight: 800;
+  color: #fff;
+}
+
+#black-turn {
+  font-size: 24px;
+  font-weight: 800;
+  color: #000;
 }

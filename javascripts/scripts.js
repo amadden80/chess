@@ -192,7 +192,7 @@ function drawPiece(piece){
   } else {
     radius = size/2.5;
     pieceFontSize = fontSize;
-  }  
+  }
   context.save();
 
   context.fillStyle = players[piece.player].color;
@@ -234,9 +234,16 @@ function drawHighlight() {
 }
 
 function drawHud() {
-  var turn = document.getElementById('turn')
-  turn.innerHTML = currentPlayer === 0 ? 'White' : 'Black';
-  turn.style.color = currentPlayer === 0 ? 'white' : 'black';
+  var whiteTurn = document.getElementById('white-turn');
+  var blackTurn = document.getElementById('black-turn');
+
+  if (currentPlayer === 0) {
+    whiteTurn.innerHTML = 'White to play';
+    blackTurn.innerHTML = ' ';
+  } else {
+    whiteTurn.innerHTML = ' ';
+    blackTurn.innerHTML = 'Black to play';
+  }
 }
 
 function draw() {
