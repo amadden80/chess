@@ -3,14 +3,17 @@ console.log('Your Turn');
 var canvas;
 var context;
 var size = 80;
+var fontSize = Math.floor(size/2);
 var players = [
   {
-    color: '#f00',
-    name: 'Andy',
+    color: '#000',
+    textColor: '#fff',
+    name: 'Andy'
   },
   {
-    color: '#00f',
-    name: 'Hari',
+    color: '#fff',
+    textColor: '#000',
+    name: 'Hari'
   }
 ]
 
@@ -66,7 +69,7 @@ function init() {
 function drawBoard() {
   for (var row = 0; row < 8; row++) {
     for (var col = 0; col < 8; col++) {
-      context.fillStyle = (row + col) % 2 == 0 ? '#fff' : '#000';
+      context.fillStyle = (row + col) % 2 == 0 ? '#ffedc7' : '#333';
       context.fillRect(col * size, row * size, size, size);
     }
   }
@@ -76,12 +79,17 @@ function drawPiece(piece){
   var x = piece.col*size+size/2;
   var y = piece.row*size+size/2;
   context.save();
+
   context.fillStyle = players[piece.player].color;
+  context.strokeStyle = players[1 - piece.player].color;
   context.beginPath();
   context.arc(x, y, size/2.5, 0, 2*Math.PI);
   context.fill();
-  context.fillStyle = '#fff';
-  context.fillText(piece.type, x, y)
+  context.stroke();
+  context.fillStyle = players[piece.player].textColor;
+  context.font = fontSize + 'pt Georgia';
+  var offset = context.measureText(piece.type).width;
+  context.fillText(piece.type, x - offset/2, y + fontSize/2);
   context.restore();
 }
 
