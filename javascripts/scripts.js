@@ -2,6 +2,7 @@ console.log('Your Turn');
 
 var canvas;
 var context;
+var gameStates=[];
 var size = 80;
 var fontSize = Math.floor(size/2);
 var players = [
@@ -65,6 +66,7 @@ var pieces = [
 window.onload = init;
 
 function init() {
+  document.getElementById('undo-button').addEventListener('click', undo);
   canvas = document.getElementById('board');
   context = canvas.getContext('2d');
   console.log(context);
@@ -118,12 +120,15 @@ function mouseup(e){
 
   var destinationPiece = findPiece(inputMan.uRow, inputMan.uCol);
   if (validMove(destinationPiece)){
+    saveGame();
+
     if (destinationPiece){
       destinationPiece.row = -1;
       destinationPiece.col = -1;
     }
     inputMan.piece.row = inputMan.uRow;
     inputMan.piece.col = inputMan.uCol;
+
   }
 
   console.log('Move');
@@ -131,8 +136,34 @@ function mouseup(e){
   console.log('Down: ', inputMan.dRow, inputMan.dCol);
   console.log('Up: ', inputMan.uRow, inputMan.uCol);
   draw();
+
+
 }
 
+function saveGame(){
+  gameStates.push(cloneGame());
+}
+
+function undo(){
+  if (gameStates.length>0){
+    pieces = gameStates.pop();
+  }
+  draw();
+}
+
+
+function cloneGame(){
+  var newPieces = [];
+  for(var i=0; i<pieces.length; i++){
+    var piece = {};
+    piece.row = pieces[i].row;
+    piece.col = pieces[i].col;
+    piece.player = pieces[i].player;
+    piece.type = pieces[i].type;
+    newPieces.push(piece);
+  }
+  return newPieces;
+}
 
 function findPiece(row, col){
   for(var i=0; i<pieces.length; i++){
