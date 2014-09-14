@@ -42,16 +42,25 @@ function pieceCanMove(destinationPiece) {
 }
 
 function pawnCanMove(destinationPiece) {
+  var piece = inputMan.piece;
   if (destinationPiece) {
-    if (deltaRow() === (0.5 - inputMan.piece.player) * 2
+    if (deltaRow() === (0.5 - piece.player) * 2
         && Math.abs(deltaCol()) === 1) {
       return true;
     }
   }
   else {
-    if (deltaRow() === (0.5 - inputMan.piece.player) * 2
-        && deltaCol() === 0) {
-      return true;
+    if (piece.row === 6 - 5 * piece.player) {
+      if ((deltaRow() === (0.5 - piece.player) * 2 || deltaRow() === (0.5 - piece.player) * 4)
+          && deltaCol() === 0) {
+        return true;
+      }
+    }
+    else {
+      if (deltaRow() === (0.5 - piece.player) * 2
+          && deltaCol() === 0) {
+        return true;
+      }
     }
   }
   return false;
