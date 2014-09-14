@@ -33,7 +33,7 @@ function mouseup(e){
   inputMan.down = false;
 
   var destinationPiece = findPiece(inputMan.uRow, inputMan.uCol);
-  if (validMove(destinationPiece)){
+  if (inputMan.piece && validMove(destinationPiece)){
     saveGame();
 
     if (destinationPiece){

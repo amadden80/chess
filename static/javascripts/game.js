@@ -6,7 +6,6 @@ function init() {
 
   canvas = document.getElementById('board');
   context = canvas.getContext('2d');
-  console.log(context);
   pieces = defaultBoard();
   draw();
 
