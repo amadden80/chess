@@ -8,8 +8,8 @@ function drawBoard() {
 }
 
 function drawPiece(piece){
-  var x = piece.col*size+size/2;
-  var y = piece.row*size+size/2;
+  var x = piece.col*size + size/2;
+  var y = piece.row*size + size/2;
   var radius;
   var pieceFontSize;
   if (piece.type === 'P') {
@@ -20,21 +20,17 @@ function drawPiece(piece){
     pieceFontSize = fontSize;
   }
   context.save();
-
+  context.translate(x, y);
   context.fillStyle = players[piece.player].color;
   context.strokeStyle = players[1 - piece.player].color;
-
   context.beginPath();
-
-  context.arc(x, y, radius, 0, 2*Math.PI);
+  context.arc(0, 0, radius, 0, 2*Math.PI);
   context.fill();
   context.stroke();
-
   context.fillStyle = players[piece.player].textColor;
   context.font = pieceFontSize + 'pt Georgia';
   var offset = context.measureText(piece.type).width;
-  context.fillText(piece.type, x - offset/2, y + pieceFontSize/2);
-
+  context.fillText(piece.type, -offset/2, pieceFontSize/2);
   context.restore();
 }
 
@@ -46,14 +42,15 @@ function drawPieces() {
 
 function drawHighlight() {
   if (inputMan.down) {
-    var x = inputMan.cCol*size+size/2;
-    var y = inputMan.cRow*size+size/2;
+    var x = inputMan.cCol*size + size/2;
+    var y = inputMan.cRow*size + size/2;
 
     context.save();
+    context.translate(x, y);
     context.strokeStyle = "#ff0";
     context.lineWidth = 5;
     context.beginPath();
-    context.arc(x, y, size/2.5, 0, 2*Math.PI);
+    context.arc(0, 0, size/2.5, 0, 2*Math.PI);
     context.stroke();
     context.restore();
   }
