@@ -42,9 +42,17 @@ function pieceCanMove(destinationPiece) {
 }
 
 function pawnCanMove(destinationPiece) {
-  if (deltaRow() === (0.5 - inputMan.piece.player) * 2
-      && deltaCol() === 0) {
-    return true;
+  if (destinationPiece) {
+    if (deltaRow() === (0.5 - inputMan.piece.player) * 2
+        && Math.abs(deltaCol()) === 1) {
+      return true;
+    }
+  }
+  else {
+    if (deltaRow() === (0.5 - inputMan.piece.player) * 2
+        && deltaCol() === 0) {
+      return true;
+    }
   }
   return false;
 }
