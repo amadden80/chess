@@ -105,7 +105,7 @@ function bishopPathFree() {
   var colDir = deltaCol() > 0 ? 1 : -1;
   var row = inputMan.dRow + rowDir;
   var col = inputMan.dCol + colDir;
-  while (inputMan.uRow - row * rowDir > 0) {
+  while ((inputMan.uRow - row) * rowDir > 0) {
     if (findPiece(row, col)) {
       return false;
     }
@@ -120,11 +120,40 @@ function knightPathFree() {
 }
 
 function rookPathFree() {
+
+  var rowDir = deltaRow() === 0 ? 0 : (deltaRow() > 0 ? 1 : -1);
+  var colDir = deltaCol() === 0 ? 0 : (deltaCol() > 0 ? 1 : -1);
+  var row = inputMan.dRow + rowDir;
+  var col = inputMan.dCol + colDir;
+  while ((inputMan.uRow - row) * rowDir >= 0
+      && (inputMan.uCol - col) * colDir >= 0
+      && !(row === inputMan.uRow && col === inputMan.uCol)) {
+    if (findPiece(row, col)) {
+      return false;
+    }
+    row += rowDir;
+    col += colDir;
+  }
   return true;
+  //
+  //
+  // if (deltaCol() === 0) {
+  //   var rowDir = deltaRow() > 0 ? 1 : -1;
+  //   var row = inputMan.dRow + rowDir;
+  //   var col = inputMan.piece.col;
+  //   while ((inputMan.uRow - row) * rowDir > 0) {
+  //     if (findPiece(row, col)) {
+  //       return false;
+  //     }
+  //     row += rowDir;
+  //   }
+  // }
+  //
+  // return true;
 }
 
 function queenPathFree() {
-  return true;
+  return rookCanMove() ? rookPathFree() : bishopPathFree();
 }
 
 function kingPathFree() {
