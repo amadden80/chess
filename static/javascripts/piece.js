@@ -135,21 +135,6 @@ function rookPathFree() {
     col += colDir;
   }
   return true;
-  //
-  //
-  // if (deltaCol() === 0) {
-  //   var rowDir = deltaRow() > 0 ? 1 : -1;
-  //   var row = inputMan.dRow + rowDir;
-  //   var col = inputMan.piece.col;
-  //   while ((inputMan.uRow - row) * rowDir > 0) {
-  //     if (findPiece(row, col)) {
-  //       return false;
-  //     }
-  //     row += rowDir;
-  //   }
-  // }
-  //
-  // return true;
 }
 
 function queenPathFree() {
