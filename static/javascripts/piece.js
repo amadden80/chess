@@ -25,17 +25,17 @@ function findPiece(row, col){
 function pieceCanMove(destinationPiece) {
   switch(inputMan.piece.type) {
   case 'P':
-    return pawnCanMove(destinationPiece);
+    return pawnCanMove(destinationPiece) && pawnPathFree();
   case 'B':
-    return bishopCanMove();
+    return bishopCanMove() && bishopPathFree();
   case 'N':
-    return knightCanMove();
+    return knightCanMove() && knightPathFree();
   case 'R':
-    return rookCanMove();
+    return rookCanMove() && rookPathFree();
   case 'Q':
-    return queenCanMove();
+    return queenCanMove() && queenPathFree();
   case 'K':
-    return kingCanMove();
+    return kingCanMove() && kingPathFree();
   default:
     return true;
   }
@@ -44,20 +44,20 @@ function pieceCanMove(destinationPiece) {
 function pawnCanMove(destinationPiece) {
   var piece = inputMan.piece;
   if (destinationPiece) {
-    if (deltaRow() === (0.5 - piece.player) * 2
+    if (deltaRow() === (piece.player - 0.5) * 2
         && Math.abs(deltaCol()) === 1) {
       return true;
     }
   }
   else {
     if (piece.row === 6 - 5 * piece.player) {
-      if ((deltaRow() === (0.5 - piece.player) * 2 || deltaRow() === (0.5 - piece.player) * 4)
+      if ((deltaRow() === (piece.player - 0.5) * 2 || deltaRow() === (piece.player - 0.5) * 4)
           && deltaCol() === 0) {
         return true;
       }
     }
     else {
-      if (deltaRow() === (0.5 - piece.player) * 2
+      if (deltaRow() === (piece.player - 0.5) * 2
           && deltaCol() === 0) {
         return true;
       }
@@ -87,9 +87,46 @@ function kingCanMove() {
 }
 
 function deltaRow() {
-  return (inputMan.dRow - inputMan.uRow);
+  return (inputMan.uRow - inputMan.dRow);
 }
 
 function deltaCol() {
-  return (inputMan.dCol - inputMan.uCol);
+  return (inputMan.uCol - inputMan.dCol);
+}
+
+function pawnPathFree(destinationPiece) {
+  var rowInFront = inputMan.piece.row + (inputMan.piece.player - 0.5) * 2;
+  var pieceInFront = findPiece(rowInFront, inputMan.piece.col);
+  return !(Math.abs(deltaRow()) === 2 && pieceInFront);
+}
+
+function bishopPathFree() {
+  var rowDir = deltaRow() > 0 ? 1 : -1;
+  var colDir = deltaCol() > 0 ? 1 : -1;
+  var row = inputMan.dRow + rowDir;
+  var col = inputMan.dCol + colDir;
+  while (inputMan.uRow - row * rowDir > 0) {
+    if (findPiece(row, col)) {
+      return false;
+    }
+    row += rowDir;
+    col += colDir;
+  }
+  return true;
+}
+
+function knightPathFree() {
+  return true;
+}
+
+function rookPathFree() {
+  return true;
+}
+
+function queenPathFree() {
+  return true;
+}
+
+function kingPathFree() {
+  return true;
 }
