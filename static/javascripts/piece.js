@@ -1,13 +1,21 @@
-function validMove(destinationPiece){
-  if (destinationPiece && destinationPiece.player == inputMan.piece.player){
+function validMove(info){
+  // Can't take own piece
+  if (info.toPiece && info.toPiece.player == inputMan.piece.player){
     return false;
   }
 
-  if (!pieceCanMove(destinationPiece)) {
+  // Invalid move
+  if (!pieceCanMove(info)) {
     return false;
   }
 
+  // Not your turn
   if (inputMan.piece.player !== currentPlayer) {
+    return false;
+  }
+
+  // Cannot end your turn in check
+  if (inCheck(currentPlayer)) {
     return false;
   }
 
@@ -22,43 +30,51 @@ function findPiece(row, col){
   }
 }
 
-function pieceCanMove(destinationPiece) {
-  switch(inputMan.piece.type) {
+function findKing(player) {
+  for (var i=0; i<pieces.length; i++){
+    if(pieces[i].type === 'K' && pieces[i].player === player) {
+      return pieces[i];
+    }
+  }
+}
+
+function pieceCanMove(info) {
+  switch((info.piece || inputMan.piece).type) {
   case 'P':
-    return pawnCanMove(destinationPiece) && pawnPathFree();
+    return pawnCanMove(info) && pawnPathFree(info);
   case 'B':
-    return bishopCanMove() && bishopPathFree();
+    return bishopCanMove(info) && bishopPathFree(info);
   case 'N':
-    return knightCanMove() && knightPathFree();
+    return knightCanMove(info) && knightPathFree(info);
   case 'R':
-    return rookCanMove() && rookPathFree();
+    return rookCanMove(info) && rookPathFree(info);
   case 'Q':
-    return queenCanMove() && queenPathFree();
+    return queenCanMove(info) && queenPathFree(info);
   case 'K':
-    return kingCanMove() && kingPathFree();
+    return kingCanMove(info) && kingPathFree(info);
   default:
     return true;
   }
 }
 
-function pawnCanMove(destinationPiece) {
-  var piece = inputMan.piece;
-  if (destinationPiece) {
-    if (deltaRow() === (piece.player - 0.5) * 2
-        && Math.abs(deltaCol()) === 1) {
+function pawnCanMove(info) {
+  var piece = info.piece || inputMan.piece;
+  if (info.toPiece) {
+    if (deltaRow(info) === (piece.player - 0.5) * 2
+        && Math.abs(deltaCol(info)) === 1) {
       return true;
     }
   }
   else {
     if (piece.row === 6 - 5 * piece.player) {
-      if ((deltaRow() === (piece.player - 0.5) * 2 || deltaRow() === (piece.player - 0.5) * 4)
-          && deltaCol() === 0) {
+      if ((deltaRow(info) === (piece.player - 0.5) * 2 || deltaRow(info) === (piece.player - 0.5) * 4)
+          && deltaCol(info) === 0) {
         return true;
       }
     }
     else {
-      if (deltaRow() === (piece.player - 0.5) * 2
-          && deltaCol() === 0) {
+      if (deltaRow(info) === (piece.player - 0.5) * 2
+          && deltaCol(info) === 0) {
         return true;
       }
     }
@@ -66,46 +82,52 @@ function pawnCanMove(destinationPiece) {
   return false;
 }
 
-function bishopCanMove() {
-  return Math.abs(deltaRow()) === Math.abs(deltaCol());
+function bishopCanMove(info) {
+  return Math.abs(deltaRow(info)) === Math.abs(deltaCol(info));
 }
 
-function knightCanMove() {
-  return deltaRow()*deltaRow() + deltaCol()*deltaCol() === 5;
+function knightCanMove(info) {
+  return deltaRow(info)*deltaRow(info) + deltaCol(info)*deltaCol(info) === 5;
 }
 
-function rookCanMove() {
-  return deltaRow() * deltaCol() === 0;
+function rookCanMove(info) {
+  return deltaRow(info) * deltaCol(info) === 0;
 }
 
-function queenCanMove() {
-  return bishopCanMove() || rookCanMove();
+function queenCanMove(info) {
+  return bishopCanMove(info) || rookCanMove(info);
 }
 
-function kingCanMove() {
-  return queenCanMove() && deltaRow()*deltaRow() + deltaCol()*deltaCol() <= 2;
+function kingCanMove(info) {
+  return queenCanMove(info) && deltaRow(info)*deltaRow(info) + deltaCol(info)*deltaCol(info) <= 2;
 }
 
-function deltaRow() {
-  return (inputMan.uRow - inputMan.dRow);
+function deltaRow(info) {
+  var toRow = info.toRow === undefined ? inputMan.uRow : info.toRow;
+  var fromRow = info.fromRow === undefined ? inputMan.dRow : info.fromRow;
+  return (toRow - fromRow);
 }
 
-function deltaCol() {
-  return (inputMan.uCol - inputMan.dCol);
+function deltaCol(info) {
+  var toCol = info.toCol === undefined ? inputMan.uCol : info.toCol;
+  var fromCol = info.fromCol === undefined ? inputMan.dCol : info.fromCol;
+  return (toCol - fromCol);
 }
 
-function pawnPathFree(destinationPiece) {
-  var rowInFront = inputMan.piece.row + (inputMan.piece.player - 0.5) * 2;
-  var pieceInFront = findPiece(rowInFront, inputMan.piece.col);
-  return !(Math.abs(deltaRow()) === 2 && pieceInFront);
+function pawnPathFree(info) {
+  var piece = info.piece || inputMan.piece;
+  var rowInFront = piece.row + (piece.player - 0.5) * 2;
+  var pieceInFront = findPiece(rowInFront, piece.col);
+  return !(Math.abs(deltaRow(info)) === 2 && pieceInFront);
 }
 
-function bishopPathFree() {
-  var rowDir = deltaRow() > 0 ? 1 : -1;
-  var colDir = deltaCol() > 0 ? 1 : -1;
-  var row = inputMan.dRow + rowDir;
-  var col = inputMan.dCol + colDir;
-  while ((inputMan.uRow - row) * rowDir > 0) {
+function bishopPathFree(info) {
+  var rowDir = deltaRow(info) > 0 ? 1 : -1;
+  var colDir = deltaCol(info) > 0 ? 1 : -1;
+  var row = (info.fromRow === undefined ? inputMan.dRow : info.fromRow) + rowDir;
+  var col = (info.fromCol === undefined ? inputMan.dCol : info.fromCol) + colDir;
+  var toRow = info.toRow === undefined ? inputMan.uRow : info.toRow;
+  while ((toRow - row) * rowDir > 0) {
     if (findPiece(row, col)) {
       return false;
     }
@@ -115,19 +137,21 @@ function bishopPathFree() {
   return true;
 }
 
-function knightPathFree() {
+function knightPathFree(info) {
   return true;
 }
 
-function rookPathFree() {
+function rookPathFree(info) {
 
-  var rowDir = deltaRow() === 0 ? 0 : (deltaRow() > 0 ? 1 : -1);
-  var colDir = deltaCol() === 0 ? 0 : (deltaCol() > 0 ? 1 : -1);
-  var row = inputMan.dRow + rowDir;
-  var col = inputMan.dCol + colDir;
-  while ((inputMan.uRow - row) * rowDir >= 0
-      && (inputMan.uCol - col) * colDir >= 0
-      && !(row === inputMan.uRow && col === inputMan.uCol)) {
+  var rowDir = deltaRow(info) === 0 ? 0 : (deltaRow(info) > 0 ? 1 : -1);
+  var colDir = deltaCol(info) === 0 ? 0 : (deltaCol(info) > 0 ? 1 : -1);
+  var row = (info.fromRow === undefined ? inputMan.dRow : info.fromRow) + rowDir;
+  var col = (info.fromCol === undefined ? inputMan.dCol : info.fromCol) + colDir;
+  var toRow = info.toRow === undefined ? inputMan.uRow : info.toRow;
+  var toCol = info.toCol === undefined ? inputMan.uCol : info.toCol;
+  while ((toRow - row) * rowDir >= 0
+      && (toCol - col) * colDir >= 0
+      && !(row === toRow && col === toCol)) {
     if (findPiece(row, col)) {
       return false;
     }
@@ -137,10 +161,40 @@ function rookPathFree() {
   return true;
 }
 
-function queenPathFree() {
-  return rookCanMove() ? rookPathFree() : bishopPathFree();
+function queenPathFree(info) {
+  return rookCanMove(info) ? rookPathFree(info) : bishopPathFree(info);
 }
 
-function kingPathFree() {
+function kingPathFree(info) {
   return true;
+}
+
+function inCheck(player) {
+  var king = findKing(player);
+  if (king === inputMan.piece) {
+    var toRow = inputMan.uRow;
+    var toCol = inputMan.uCol;
+  }
+  else {
+    var toRow = king.row;
+    var toCol = king.col;
+  }
+  var info = {
+    toPiece: king,
+    toRow: toRow,
+    toCol: toCol
+  }
+
+  for(var i=0; i<pieces.length; i++){
+    if (pieces[i].player !== player) {
+      info.piece = pieces[i];
+      info.fromRow = pieces[i].row;
+      info.fromCol = pieces[i].col;
+      if (pieceCanMove(info)) {
+        console.log(info);
+        return true;
+      }
+    }
+  }
+  return false;
 }
