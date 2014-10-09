@@ -4,6 +4,8 @@ function init() {
   document.getElementById('undo-button').addEventListener('click', undo);
   document.getElementById('reset-button').addEventListener('click', resetGame)
 
+  sprite = document.getElementById('sprite');
+
   canvas = document.getElementById('board');
   context = canvas.getContext('2d');
   pieces = defaultBoard();

@@ -1,7 +1,7 @@
 function drawBoard() {
   for (var row = 0; row < 8; row++) {
     for (var col = 0; col < 8; col++) {
-      context.fillStyle = (row + col) % 2 === 0 ? '#ffedc7' : '#333';
+      context.fillStyle = (row + col) % 2 === 0 ? '#ffedc7' : 'sienna';
       context.fillRect(col * size, row * size, size, size);
     }
   }
@@ -10,27 +10,10 @@ function drawBoard() {
 function drawPiece(piece){
   var x = piece.col*size + size/2;
   var y = piece.row*size + size/2;
-  var radius;
-  var pieceFontSize;
-  if (piece.type === 'P') {
-    radius = size/3;
-    pieceFontSize = Math.floor(fontSize/1.5);
-  } else {
-    radius = size/2.5;
-    pieceFontSize = fontSize;
-  }
+
   context.save();
   context.translate(x, y);
-  context.fillStyle = players[piece.player].color;
-  context.strokeStyle = players[1 - piece.player].color;
-  context.beginPath();
-  context.arc(0, 0, radius, 0, 2*Math.PI);
-  context.fill();
-  context.stroke();
-  context.fillStyle = players[piece.player].textColor;
-  context.font = pieceFontSize + 'pt Georgia';
-  var offset = context.measureText(piece.type).width;
-  context.fillText(piece.type, -offset/2, pieceFontSize/2);
+  context.drawImage(sprite, spriteOffsets['x'][piece.type], spriteOffsets['y'][piece.player], spriteSize, spriteSize, -spriteSize/2, -spriteSize/2, spriteSize, spriteSize);
   context.restore();
 }
 

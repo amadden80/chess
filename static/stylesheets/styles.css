@@ -1,5 +1,5 @@
 body{
-  background-color: darkseagreen;
+  background-color: tan;
   font-family: Arial;
   text-align: center;
   color: steelblue;
@@ -7,7 +7,7 @@ body{
 }
 
 #board {
-  border: 2px solid seagreen;
+  border: 2px solid peru;
 }
 
 button {

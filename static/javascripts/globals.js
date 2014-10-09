@@ -29,3 +29,20 @@ var inputMan = {
   cRow: -1,
   cCol: -1
 }
+
+var sprite;
+var spriteSize = 64;
+var spriteOffsets = {
+  'x': {
+    'P': 0,
+    'B': spriteSize,
+    'N': spriteSize * 2,
+    'R': spriteSize * 3,
+    'Q': spriteSize * 4,
+    'K': spriteSize * 5,
+  },
+  'y': {
+    0: 0,
+    1: spriteSize
+  }
+}
